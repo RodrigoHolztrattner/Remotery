@@ -1,0 +1,40 @@
+﻿cmake_minimum_required(VERSION 3.1.1 FATAL_ERROR)
+
+# Git config
+find_package(Git)
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND Git_FOUND)
+	execute_process(
+		COMMAND "${GIT_EXECUTABLE}" rev-list --count --topo-order v${VERSION_FULL}..HEAD
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET
+	)
+endif()
+
+if(WIN32)
+	set(PROJECT_PRODUCT_NAME "Remotery")
+endif()
+
+set(PROJECT_NAME "Remotery")
+set(PEON_FILES "Remotery")
+
+project(${PROJECT_NAME} VERSION 1.0.0 DESCRIPTION "blob")
+
+add_library(${PROJECT_NAME} STATIC
+lib/Remotery.c
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER lib/Remotery.h)
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    COMPONENT library)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON)    
